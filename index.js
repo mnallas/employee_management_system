@@ -1,5 +1,21 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+
+function viewMenu() {
+  inquirer
+    .prompt({
+      name: "view",
+      message: "Select Option:",
+      type: "list",
+      choices: ["employee", "roles", "department"],
+    })
+    .then((res) => {
+      func(res.view).then((res) => {
+        console.log(res);
+        mainMenu();
+      });
+    });
+}
 function searchMenu(func) {
   inquirer
     .prompt({
@@ -21,16 +37,29 @@ function mainMenu() {
         name: "mainMenu",
         message: "Where would you like to go?",
         type: "list",
-        choices: ["View all", "View one", "Delete one", "Edit", "Exit"],
+        choices: [
+          "View All",
+          "View Options",
+          "View an Employee",
+          "Add Employee",
+          "Add Role",
+          "Add Department",
+          "Delete",
+          "Edit",
+          "Exit",
+        ],
       },
     ])
     .then((res) => {
       switch (res.mainMenu) {
-        case "View all":
-          readAllTodos().then((res) => {
+        case "View All":
+          readAllEmployee().then((res) => {
             console.log(res);
             mainMenu();
           });
+          break;
+        case "View Options":
+          viewMenu();
           break;
         case "View one":
           searchMenu(findTodo);
@@ -73,15 +102,33 @@ const findTodo = (findId) => {
     );
   });
 };
-const readAllTodos = () => {
+
+const readTodo = () => {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT * FROM todos", (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
+    connection.query("SELECT * FROM employee"),
+      (err, data) => {
+        err ? reject(err) : resolve(data);
+      };
+  });
+};
+
+const readAllEmployee = () => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `SELECT employee.id, employee.first_name, employee.last_name, roles.title, roles.salary, employee.manager_id, department.department_name
+	FROM employee 
+	INNER JOIN roles
+		ON employee.role_id = roles.id
+	INNER JOIN department
+		ON roles.department_id = department.id`,
+      (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
       }
-    });
+    );
   });
 };
 const addTodo = (newText) => {
