@@ -45,11 +45,11 @@ DELETE FROM employee WHERE id = 1;
 DELETE FROM employee WHERE id = 2;
 DELETE FROM employee WHERE id = 6;
 
-INSERT INTO employee (first_name, last_name, role_id)
-VALUES ("Myhkas", "Nallas", 1);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("Myhkas", "Nallas", 1, null);
 
-INSERT INTO employee (first_name, last_name, role_id)
-VALUES ("Shanesia", "Mae", 2);
+INSERT INTO employee (first_name, last_name, role_id, manager_id)
+VALUES ("Shanesia", "Mae", 2, null);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("Vince", "Clarence", 3, 4);

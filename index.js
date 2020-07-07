@@ -1,21 +1,56 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 
-function viewMenu() {
+// function viewMenu() {
+//   inquirer
+//     .prompt({
+//       name: "view",
+//       message: "Select Option:",
+//       type: "list",
+//       choices: ["employee", "roles", "department"],
+//     })
+//     .then((res) => {
+//       func(res.view).then((res) => {
+//         console.log(res);
+//         mainMenu();
+//       });
+//     });
+// }
+
+function addMenu(func) {
   inquirer
-    .prompt({
-      name: "view",
-      message: "Select Option:",
-      type: "list",
-      choices: ["employee", "roles", "department"],
-    })
+    .prompt([
+      {
+        name: "firstName",
+        message: "enter first name: ",
+        type: "input",
+      },
+      {
+        name: "lastName",
+        message: "enter last name: ",
+        type: "input",
+      },
+      {
+        name: "role",
+        message: "Choose your role: ",
+        type: "list",
+        choices: ["Sales Lead", "Senior Engineer", "Accountant"],
+      },
+      {
+        name: "manager",
+        message: "Choose manager: ",
+        type: "list",
+        choices: ["#", "#", "#"],
+      },
+    ])
     .then((res) => {
-      func(res.view).then((res) => {
+      func(res.search).then((res) => {
         console.log(res);
         mainMenu();
       });
     });
 }
+
 function searchMenu(func) {
   inquirer
     .prompt({
@@ -61,11 +96,14 @@ function mainMenu() {
         case "View Options":
           viewMenu();
           break;
-        case "View one":
-          searchMenu(findTodo);
+        case "View an Employee":
+          searchMenu(findEmployee);
           break;
-        case "Delete one":
-          searchMenu(deleteTodo);
+        case "Add Employee":
+          addMenu(addEmployee);
+          break;
+        case "Delete":
+          searchMenu(deleteEmployee);
           break;
         case "Exit":
           connection.end();
@@ -87,10 +125,10 @@ connection.connect(async (err) => {
   console.log("We have been connected");
   mainMenu();
 });
-const findTodo = (findId) => {
+const findEmployee = (findId) => {
   return new Promise((resolve, reject) => {
     connection.query(
-      "SELECT * FROM todos WHERE ?",
+      "SELECT * FROM employee WHERE ?",
       [{ id: findId }],
       (err, data) => {
         if (err) {
@@ -131,23 +169,27 @@ const readAllEmployee = () => {
     );
   });
 };
-const addTodo = (newText) => {
+const addEmployee = (newText) => {
   return new Promise((resolve, reject) => {
-    connection.query("INSERT INTO todos SET ?", [{ text: newText }], (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ msg: "Successfully added!!!" });
+    connection.query(
+      "INSERT INTO employee SET ?",
+      [{ first_name: newText }],
+      (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ msg: "Successfully added!!!" });
+        }
       }
-    });
+    );
   });
 };
 
-const deleteTodo = (findId) => {
+const deleteEmployee = (findId) => {
   return new Promise((resolve, reject) => {
-    connection.query("DELETE FROM todos WHERE ?", [{ id: findId }]),
+    connection.query("DELETE FROM employee WHERE ?", [{ id: findId }]),
       (err) => {
-        err ? reject(err) : resolve({ msg: "Deleted todo!" });
+        err ? reject(err) : resolve({ msg: "Deleted employee!" });
       };
   });
 };
